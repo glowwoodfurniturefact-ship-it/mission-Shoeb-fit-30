@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101827">
+<title>MISSION SHOEB FIT 30</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101827;color:#fff;font-family:Arial,sans-serif}
+header{background:#17243a;padding:22px 18px;border-bottom:2px solid #38d9a9}
+header h1{font-size:25px;margin:0;color:#38d9a9}
+header p{margin:8px 0 0;color:#cbd5e1}
+main{max-width:650px;margin:auto;padding:16px}
+.card{background:#1d2b42;border-radius:16px;padding:18px;margin:14px 0}
+h2{margin-top:0}
+button,select,input{font-size:16px;padding:12px;border-radius:9px;border:0}
+button{background:#38d9a9;color:#102033;font-weight:bold;cursor:pointer}
+select,input{max-width:100%;background:#fff;color:#111}
+nav{display:flex;gap:7px;flex-wrap:wrap;margin:15px 0}
+nav button{flex:1;min-width:75px;padding:11px 6px}
+.item{padding:12px 0;border-bottom:1px solid #40516a}
+.item:last-child{border:0}
+label{display:block;margin:12px 0 6px}
+.small{color:#cbd5e1;font-size:14px;line-height:1.5}
+.progress{width:100%;accent-color:#38d9a9}
+.done{margin-right:9px;transform:scale(1.2)}
+</style>
+</head>
+<body>
+<header>
+<h1>MISSION SHOEB FIT 30</h1>
+<p>30-Day Beginner Fitness Challenge</p>
+</header>
+<main>
+<div class="card">
+<h2>💪 Your Mission</h2>
+<p>Build healthy habits, improve fitness and work toward reducing belly fat safely.</p>
+<label for="day">Choose your day</label>
+<select id="day" onchange="renderDay()"></select>
+<p id="daytitle"></p>
+<div id="workout"></div>
+</div>
+<nav>
+<button onclick="showTab('diet')">🥗 Diet</button>
+<button onclick="showTab('progress')">📊 Progress</button>
+<button onclick="showTab('safety')">🛡️ Safety</button>
+</nav>
+<section class="card" id="extra"></section>
+<div class="card">
+<h2>Daily Mission Complete?</h2>
+<label><input class="done" type="checkbox" id="check" onchange="saveDone()">Workout completed</label>
+<p class="small" id="saved"></p>
+</div>
+</main>
+<script>
+const tasks=[
+["Seated marching","Wall push-ups","Gentle knee extensions"],
+["Easy walk if pain-free","Wall push-ups","Seated marching"],
+["Seated marching","Wall push-ups","Gentle stretching"],
+["Easy walk if pain-free","Seated knee extensions","Wall push-ups"],
+["Seated marching","Wall push-ups","Gentle stretching"]
+];
+const day=document.getElementById('day');
+for(let i=1;i<=30;i++){let o=document.createElement('option');o.value=i;o.textContent='Day '+i;day.appendChild(o)}
+function renderDay(){
+let d=+day.value;
+document.getElementById('daytitle').textContent='Day '+d+' of 30';
+document.getElementById('workout').innerHTML=tasks[(d-1)%5].map(t=>'<div class="item">☐ '+t+'</div>').join('')+'<p class="small">Start gently. Rest between movements. Stop if pain increases.</p>';
+document.getElementById('check').checked=localStorage.getItem('done'+d)==='yes';
+document.getElementById('saved').textContent=document.getElementById('check').checked?'Saved ✓':'Progress saves on this device.';
+}
+function saveDone(){localStorage.setItem('done'+day.value,document.getElementById('check').checked?'yes':'no');renderDay()}
+function showTab(tab){
+let e=document.getElementById('extra');
+if(tab==='diet')e.innerHTML='<h2>🥗 Simple Daily Diet</h2><p>Breakfast: eggs or oats and fruit.</p><p>Lunch: roti or a moderate rice portion, dal/chicken, vegetables and curd.</p><p>Snack: fruit or unsalted chana.</p><p>Dinner: vegetables with dal, eggs, paneer or chicken.</p><p class="small">Drink water. Reduce sugary drinks and frequent fried snacks. Avoid crash diets.</p>';
+if(tab==='progress')e.innerHTML='<h2>📊 My Progress</h2><label>Weight (kg)</label><input id="weight" type="number" step="0.1" placeholder="Enter weight"><label>Waist (cm)</label><input id="waist" type="number" step="0.5" placeholder="Enter waist"><p><button onclick="saveProgress()">Save progress</button></p><p id="result"></p><p class="small">Entries are stored only in this browser on this device.</p>';
+if(tab==='safety')e.innerHTML='<h2>🛡️ Safety First</h2><p>You previously mentioned mild back/knee pain. Begin with short, gentle sessions.</p><p>Avoid jumping, running, burpees and deep squats for now.</p><p>Stop if pain worsens. Seek medical advice if pain persists, affects walking, or is accompanied by swelling, numbness or weakness.</p><p class="small">This app is for general education, not a medical diagnosis. Adjust activity to your abilities.</p>';
+}
+function saveProgress(){
+let w=document.getElementById('weight').value;
+let a=document.getElementById('waist').value;
+if(w)localStorage.setItem('weight',w);
+if(a)localStorage.setItem('waist',a);
+document.getElementById('result').textContent='Saved on this device ✓';
+}
+renderDay();showTab('diet');
+</script>
+</body>
+</html>
