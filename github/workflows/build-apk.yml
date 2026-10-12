@@ -2,14 +2,26 @@ name: Build Mission Shoeb Fit 30 APK
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - 'index.html'
+      - '.github/workflows/build-apk.yml'
+
+permissions:
+  contents: read
 
 jobs:
-  build:
+  build-apk:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -20,10 +32,24 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+      - name: Create Android project
+        run: |
+          npm init -y
+          npm install @capacitor/core @capacitor/android
+          npm install --save-dev @capacitor/cli
+          mkdir -p www
+          cp index.html www/index.html
+          echo '{"appId":"in.glowwood.missionshoebfit30","appName":"Mission Shoeb Fit 30","webDir":"www"}' > capacitor.config.json
+          npx cap add android
 
       - name: Build APK
         run: |
-          echo "Android project files are required to build the APK."
-          echo "The web app index.html alone is not an Android project."
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mission-Shoeb-Fit-30-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
